@@ -1,0 +1,112 @@
+name: Refresh product database
+
+on:
+  schedule:
+    - cron: '0 11 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-products:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Export Google Sheet to products.json
+        run: |
+          python - <<'PY'
+          import csv
+          import io
+          import json
+          import re
+          import urllib.request
+
+          sheet_id = "1a3tUL0Te-nzVrraDE3WetntJpdITpoDO7V4nFV6jr6I"
+          csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid=0"
+
+          request = urllib.request.Request(
+              csv_url,
+              headers={"User-Agent": "MenoHello-Product-Database/1.0"}
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              csv_text = response.read().decode("utf-8-sig")
+
+          reader = csv.DictReader(io.StringIO(csv_text))
+          if not reader.fieldnames:
+              raise RuntimeError("The Google Sheet returned no column headers.")
+
+          headers = [h.strip().lower() for h in reader.fieldnames]
+          def find_column(matches):
+              for index, header in enumerate(headers):
+                  if any(term in header for term in matches):
+                      return reader.fieldnames[index]
+              return None
+
+          name_col = find_column(["name"]) or next(
+              (reader.fieldnames[i] for i, h in enumerate(headers) if h == "product"),
+              None
+          )
+          price_col = find_column(["price"])
+          rating_col = find_column(["rating", "star"])
+          category_col = find_column(["category", "symptom"])
+          image_col = find_column(["image", "img", "picture"])
+          url_col = find_column(["url", "link"])
+          description_col = find_column(["description", "desc"])
+
+          if description_col is None and len(reader.fieldnames) > 2:
+              description_col = reader.fieldnames[2]
+          if name_col is None:
+              raise RuntimeError("Could not identify the product-name column.")
+
+          def value(row, column, default=""):
+              if not column:
+                  return default
+              return (row.get(column) or "").strip()
+
+          def number(raw, default):
+              cleaned = re.sub(r"[^0-9.\\-]", "", raw or "")
+              try:
+                  return float(cleaned) if cleaned else default
+              except ValueError:
+                  return default
+
+          products = []
+          for row_number, row in enumerate(reader, start=2):
+              name = value(row, name_col)
+              if not name:
+                  continue
+              products.append({
+                  "id": row_number,
+                  "name": name,
+                  "price": number(value(row, price_col), 0),
+                  "rating": number(value(row, rating_col), 4.0),
+                  "category": value(row, category_col, "Uncategorized") or "Uncategorized",
+                  "image": value(row, image_col),
+                  "url": value(row, url_col, "#") or "#",
+                  "description": value(row, description_col)
+              })
+
+          if not products:
+              raise RuntimeError("No products were found; refusing to overwrite products.json.")
+
+          with open("products.json", "w", encoding="utf-8") as output:
+              json.dump(products, output, ensure_ascii=False, indent=2)
+              output.write("\\n")
+
+          print(f"Exported {len(products)} products to products.json")
+          PY
+
+      - name: Commit updated product data
+        run: |
+          if git diff --quiet -- products.json; then
+            echo "No product changes found."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add products.json
+          git commit -m "Update product database from Google Sheet"
+          git push
