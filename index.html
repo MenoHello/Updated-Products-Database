@@ -2378,3 +2378,56 @@
 })();
 
 </script>
+
+<script>
+(function() {
+    'use strict';
+
+    function reportHeight() {
+        const height = Math.ceil(
+            Math.max(
+                document.documentElement.scrollHeight,
+                document.body.scrollHeight,
+                document.documentElement.getBoundingClientRect().height
+            )
+        );
+
+        window.parent.postMessage(
+            {
+                type: 'menohello-resize',
+                height: height
+            },
+            'https://www.menohello.com'
+        );
+    }
+
+    let resizeTimer;
+
+    function scheduleReport() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(reportHeight, 100);
+    }
+
+    const observer = new ResizeObserver(scheduleReport);
+
+    observer.observe(document.documentElement);
+    observer.observe(document.body);
+
+    window.addEventListener('load', scheduleReport);
+    window.addEventListener('resize', scheduleReport);
+
+    document.addEventListener('click', scheduleReport);
+    document.addEventListener('input', scheduleReport);
+    document.addEventListener('change', scheduleReport);
+
+    // Account for images loading after the initial page load.
+    document.querySelectorAll('img').forEach(function(img) {
+        if (!img.complete) {
+            img.addEventListener('load', scheduleReport);
+            img.addEventListener('error', scheduleReport);
+        }
+    });
+
+    reportHeight();
+})();
+</script>
