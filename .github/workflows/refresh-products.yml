@@ -2,7 +2,8 @@ name: Refresh product database
 
 on:
   schedule:
-    - cron: '0 11 * * 1'
+    - cron: '0 6 * * 1'
+      timezone: America/New_York
   workflow_dispatch:
 
 permissions:
@@ -94,7 +95,7 @@ jobs:
 
           with open("products.json", "w", encoding="utf-8") as output:
               json.dump(products, output, ensure_ascii=False, indent=2)
-              output.write("\\n")
+              output.write("\n")
 
           print(f"Exported {len(products)} products to products.json")
           PY
