@@ -1,0 +1,2380 @@
+<style>
+.product-grid-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Poppins', sans-serif;
+  padding: 20px;
+  background: #ffe9e5;
+  border-radius: 12px;
+}
+
+.pg-header h1 {
+  font-size: 32px;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0 0 10px 0;
+}
+
+.pg-header p {
+  color: #6b7280;
+  margin: 0 0 30px 0;
+}
+
+.pg-loading {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.pg-error {
+  text-align: center;
+  padding: 60px 20px;
+  color: #dc2626;
+  font-size: 18px;
+}
+
+.pg-controls {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.pg-top-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.pg-search-box {
+  flex: 0 1 260px;
+  width: 260px;
+  max-width: 260px;
+  position: relative;
+}
+
+.pg-search-box input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 34px 10px 40px;
+  border: 1px solid #c9c9d1;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.pg-search-box input:focus {
+  outline: none;
+  border-color: #c03558;
+}
+
+.pg-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.pg-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: #c03558;
+  color: #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.pg-search-clear:hover {
+  background: #ffffff;
+  color: #c03558;
+}
+
+.pg-sort-box select {
+  padding: 10px 15px;
+  border: 1px solid #c9c9d1;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.pg-favorites-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.pg-favorites-btn.active {
+  background: #6b3fa0;
+  color: white;
+}
+
+.pg-favorites-btn:not(.active) {
+  background: #ffffff;
+  color: #c03558;
+  border: 1.5px solid #c03558;
+}
+
+.pg-favorites-btn:not(.active):hover {
+  background: #c03558;
+  color: white;
+}
+
+.pg-category-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pg-category-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pg-category-btn.active {
+  background: #c03558;
+  color: white;
+}
+
+.pg-category-btn:not(.active) {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.pg-category-btn:hover:not(.active) {
+  background: #ffffff;
+  color: #c03558;
+  border: 2px solid #c03558;
+}
+
+.pg-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.pg-product-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s;
+}
+
+.pg-product-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+.pg-product-image-container {
+  position: relative;
+  background: #f9fafb;
+  padding: 20px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pg-product-image {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.pg-favorite-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.pg-favorite-btn:hover {
+  transform: scale(1.1);
+}
+
+.pg-heart-icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #9ca3af;
+  stroke-width: 2;
+}
+
+.pg-favorite-btn.favorited .pg-heart-icon {
+  fill: #f47f91;
+  stroke: #f47f91;
+}
+
+.pg-product-info {
+  padding: 16px;
+}
+
+.pg-product-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 10px 0;
+  font-size: 15px !important;
+  line-height: 1.3;
+  height: 2.6em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.pg-product-price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.pg-price-rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 10px 0;
+}
+
+.pg-stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.pg-star {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.pg-star-bg,
+.pg-star-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.pg-star-bg {
+  color: #e5e7eb;
+}
+
+.pg-star-fill {
+  overflow: hidden;
+  white-space: nowrap;
+  color: #fbbf24;
+}
+
+.pg-product-category {
+  font-size: 12px;
+  color: #4b5563;
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.pg-shop-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #c03558 !important;
+  color: white !important;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.pg-shop-btn:hover {
+  background: #f47f91 !important;
+  color: white !important;
+}
+
+.pg-no-results {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.pg-no-results p {
+  color: #6b7280;
+  font-size: 18px;
+  margin: 0 0 20px 0;
+}
+
+.pg-clear-btn {
+  padding: 10px 24px;
+  background: #c03558;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pg-clear-btn:hover {
+  background: #f47f91;
+}
+
+
+/* =========================================================
+   FAST LOADING
+   Lightweight placeholders appear before the Sheet loads.
+   ========================================================= */
+
+.pg-skeleton-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.pg-skeleton-image {
+  height: 260px;
+  background: #f4f4f4;
+  position: relative;
+  overflow: hidden;
+}
+
+.pg-skeleton-content {
+  padding: 16px;
+}
+
+.pg-skeleton-line {
+  height: 14px;
+  background: #eeeeee;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.pg-skeleton-line.short {
+  width: 45%;
+}
+
+.pg-skeleton-line.medium {
+  width: 70%;
+}
+
+.pg-skeleton-line.long {
+  width: 90%;
+}
+
+.pg-skeleton-button {
+  height: 42px;
+  background: #eeeeee;
+  border-radius: 8px;
+  margin-top: 18px;
+}
+
+/* Subtle loading movement without JavaScript */
+.pg-skeleton-image::after,
+.pg-skeleton-line::after,
+.pg-skeleton-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.55),
+    transparent
+  );
+  animation: pgSkeletonShimmer 1.4s infinite;
+}
+
+@keyframes pgSkeletonShimmer {
+  100% {
+    left: 150%;
+  }
+}
+
+
+/* Keep the actual product grid from appearing before data */
+.pg-products-grid.pg-loading-grid {
+  display: grid;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .pg-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+
+  .pg-header h1 {
+    font-size: 24px;
+  }
+
+  .pg-search-box {
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+}
+</style>
+
+
+<div class="product-grid-container">
+
+  <!-- FAST LOADING:
+       The controls are now visible immediately. -->
+  <div id="pgMainContent">
+
+    <div class="pg-controls">
+
+      <div class="pg-top-controls">
+
+        <div class="pg-search-box">
+
+          <svg
+            class="pg-search-icon"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+
+          <input
+            type="text"
+            id="pgSearchInput"
+            placeholder="Search products..."
+            aria-label="Search products"
+          >
+
+          <button
+            type="button"
+            class="pg-search-clear"
+            id="pgSearchClear"
+            aria-label="Clear search"
+          >
+            &#10005;
+          </button>
+
+        </div>
+
+
+        <div class="pg-sort-box">
+
+          <select id="pgSortSelect" aria-label="Sort products">
+
+            <option value="featured">Sort</option>
+
+            <option value="price-low">
+              Price: Low to High
+            </option>
+
+            <option value="price-high">
+              Price: High to Low
+            </option>
+
+            <option value="rating">
+              Highest Rated
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <button
+          class="pg-favorites-btn"
+          id="pgFavoritesBtn"
+          type="button"
+        >
+          <span id="pgFavBtnLabel">
+            Show My Favorites
+          </span>
+
+          <span id="pgFavCount"></span>
+
+        </button>
+
+      </div>
+
+
+      <div
+        class="pg-category-filters"
+        id="pgCategoryFilters"
+      >
+      </div>
+
+    </div>
+
+
+    <!--
+      FAST LOADING:
+      Skeleton cards appear immediately.
+      JavaScript replaces them with real products.
+    -->
+
+    <div
+      class="pg-products-grid pg-loading-grid"
+      id="pgProductsGrid"
+      aria-live="polite"
+    >
+
+      <div class="pg-skeleton-card">
+        <div class="pg-skeleton-image"></div>
+        <div class="pg-skeleton-content">
+          <div class="pg-skeleton-line long"></div>
+          <div class="pg-skeleton-line short"></div>
+          <div class="pg-skeleton-line medium"></div>
+          <div class="pg-skeleton-button"></div>
+        </div>
+      </div>
+
+      <div class="pg-skeleton-card">
+        <div class="pg-skeleton-image"></div>
+        <div class="pg-skeleton-content">
+          <div class="pg-skeleton-line long"></div>
+          <div class="pg-skeleton-line short"></div>
+          <div class="pg-skeleton-line medium"></div>
+          <div class="pg-skeleton-button"></div>
+        </div>
+      </div>
+
+      <div class="pg-skeleton-card">
+        <div class="pg-skeleton-image"></div>
+        <div class="pg-skeleton-content">
+          <div class="pg-skeleton-line long"></div>
+          <div class="pg-skeleton-line short"></div>
+          <div class="pg-skeleton-line medium"></div>
+          <div class="pg-skeleton-button"></div>
+        </div>
+      </div>
+
+      <div class="pg-skeleton-card">
+        <div class="pg-skeleton-image"></div>
+        <div class="pg-skeleton-content">
+          <div class="pg-skeleton-line long"></div>
+          <div class="pg-skeleton-line short"></div>
+          <div class="pg-skeleton-line medium"></div>
+          <div class="pg-skeleton-button"></div>
+        </div>
+      </div>
+
+      <div class="pg-skeleton-card">
+        <div class="pg-skeleton-image"></div>
+        <div class="pg-skeleton-content">
+          <div class="pg-skeleton-line long"></div>
+          <div class="pg-skeleton-line short"></div>
+          <div class="pg-skeleton-line medium"></div>
+          <div class="pg-skeleton-button"></div>
+        </div>
+      </div>
+
+      <div class="pg-skeleton-card">
+        <div class="pg-skeleton-image"></div>
+        <div class="pg-skeleton-content">
+          <div class="pg-skeleton-line long"></div>
+          <div class="pg-skeleton-line short"></div>
+          <div class="pg-skeleton-line medium"></div>
+          <div class="pg-skeleton-button"></div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div
+      class="pg-no-results"
+      id="pgNoResults"
+      style="display:none;"
+    >
+
+      <p>
+        No products found matching your criteria.
+      </p>
+
+      <button
+        class="pg-clear-btn"
+        id="pgClearBtn"
+        type="button"
+      >
+        Clear Filters
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div
+    id="pgLoadingState"
+    class="pg-loading"
+    style="display:none;"
+  >
+    Loading products...
+  </div>
+
+
+  <div
+    id="pgErrorState"
+    class="pg-error"
+    style="display:none;"
+  >
+    Well, that was unexpected (story of our lives).
+    Please try again later.
+  </div>
+
+</div>
+
+
+<script>
+
+(function() {
+
+  'use strict';
+
+
+  /* =========================================================
+     CONFIGURATION
+     ========================================================= */
+
+  var SHEET_ID =
+    '1a3tUL0Te-nzVrraDE3WetntJpdITpoDO7V4nFV6jr6I';
+
+  var SHEET_NAME = 'Sheet1';
+
+
+  /* =========================================================
+     APPLICATION STATE
+     ========================================================= */
+
+  var products = [];
+
+  var categories = [];
+
+  var searchTerm = '';
+
+  var selectedCategory = '';
+
+  var sortBy = 'featured';
+
+  var favorites = new Set();
+
+  var showFavoritesOnly = false;
+
+  var dataLoaded = false;
+
+  var STAR_CHAR = String.fromCharCode(9733);
+
+
+  /* =========================================================
+     SKELETON / LOADING STATE
+     ========================================================= */
+
+  function showSkeletons() {
+
+    var grid =
+      document.getElementById('pgProductsGrid');
+
+    if (!grid) {
+      return;
+    }
+
+    /*
+      Skeletons are already in the HTML.
+      This function exists so the loading state can
+      be restored if needed.
+    */
+
+  }
+
+
+  /* =========================================================
+     LOAD GOOGLE SHEET
+     ========================================================= */
+
+  function loadProductsFromSheet() {
+
+    var csvUrl =
+      'https://docs.google.com/spreadsheets/d/' +
+      SHEET_ID +
+      '/export?format=csv&gid=0';
+
+
+    /*
+      IMPORTANT:
+      The page is already visible at this point.
+
+      We do NOT hide pgMainContent while the
+      Google Sheet is loading.
+    */
+
+    fetch(csvUrl)
+
+      .then(function(response) {
+
+        if (!response.ok) {
+
+          throw new Error(
+            'Failed to fetch: ' + response.status
+          );
+
+        }
+
+        return response.text();
+
+      })
+
+      .then(function(csvText) {
+
+        parseCSVData(csvText);
+
+        dataLoaded = true;
+
+        init();
+
+      })
+
+      .catch(function(error) {
+
+        console.error(
+          'CSV loading failed:',
+          error
+        );
+
+
+        /*
+          Fallback to Google Visualization JSON.
+        */
+
+        var jsonUrl =
+          'https://docs.google.com/spreadsheets/d/' +
+          SHEET_ID +
+          '/gviz/tq?tqx=out:json&sheet=' +
+          encodeURIComponent(SHEET_NAME);
+
+
+        fetch(jsonUrl)
+
+          .then(function(response) {
+
+            if (!response.ok) {
+
+              throw new Error(
+                'JSON request failed: ' +
+                response.status
+              );
+
+            }
+
+            return response.text();
+
+          })
+
+          .then(function(text) {
+
+            var json =
+              text.substr(47).slice(0, -2);
+
+            var data =
+              JSON.parse(json);
+
+            parseSheetData(data);
+
+            dataLoaded = true;
+
+            init();
+
+          })
+
+          .catch(function(error2) {
+
+            console.error(
+              'Both methods failed:',
+              error,
+              error2
+            );
+
+
+            var grid =
+              document.getElementById(
+                'pgProductsGrid'
+              );
+
+            if (grid) {
+              grid.innerHTML = '';
+            }
+
+
+            var errorDiv =
+              document.getElementById(
+                'pgErrorState'
+              );
+
+            errorDiv.textContent =
+              'Error loading products. Please ensure the Google Sheet is published to the web.';
+
+            errorDiv.style.display = 'block';
+
+          });
+
+      });
+
+  }
+
+
+  /* =========================================================
+     CSV PARSER
+     ========================================================= */
+
+  function parseCSVData(csvText) {
+
+    var lines =
+      csvText.split('\n');
+
+
+    if (lines.length < 2) {
+
+      throw new Error(
+        'Sheet appears to be empty'
+      );
+
+    }
+
+
+    var headers =
+      parseCSVLine(lines[0]);
+
+
+    var colIndices = {
+
+      name: -1,
+
+      price: -1,
+
+      rating: -1,
+
+      category: -1,
+
+      image: -1,
+
+      url: -1,
+
+      description: -1
+
+    };
+
+
+    for (
+      var i = 0;
+      i < headers.length;
+      i++
+    ) {
+
+      var header =
+        headers[i]
+          .toLowerCase()
+          .trim();
+
+
+      if (
+        header.indexOf('name') !== -1 ||
+        header === 'product'
+      ) {
+
+        colIndices.name = i;
+
+      }
+
+      else if (
+        header.indexOf('price') !== -1
+      ) {
+
+        colIndices.price = i;
+
+      }
+
+      else if (
+        header.indexOf('rating') !== -1 ||
+        header.indexOf('star') !== -1
+      ) {
+
+        colIndices.rating = i;
+
+      }
+
+      else if (
+        header.indexOf('category') !== -1 ||
+        header.indexOf('symptom') !== -1
+      ) {
+
+        colIndices.category = i;
+
+      }
+
+      else if (
+        header.indexOf('image') !== -1 ||
+        header.indexOf('img') !== -1 ||
+        header.indexOf('picture') !== -1
+      ) {
+
+        colIndices.image = i;
+
+      }
+
+      else if (
+        header.indexOf('url') !== -1 ||
+        header.indexOf('link') !== -1
+      ) {
+
+        colIndices.url = i;
+
+      }
+
+      else if (
+        header.indexOf('description') !== -1 ||
+        header.indexOf('desc') !== -1
+      ) {
+
+        colIndices.description = i;
+
+      }
+
+    }
+
+
+    /*
+      Description fallback.
+    */
+
+    if (
+      colIndices.description === -1 &&
+      headers.length > 2
+    ) {
+
+      colIndices.description = 2;
+
+    }
+
+
+    var categorySet = new Set();
+
+
+    for (
+      var j = 1;
+      j < lines.length;
+      j++
+    ) {
+
+      var line =
+        lines[j].trim();
+
+
+      if (!line) {
+        continue;
+      }
+
+
+      var values =
+        parseCSVLine(line);
+
+
+      var name =
+        values[colIndices.name]
+          ? values[colIndices.name].trim()
+          : '';
+
+
+      if (!name) {
+        continue;
+      }
+
+
+      var product = {
+
+        id: j,
+
+        name: name,
+
+        price:
+          parseFloat(
+            values[colIndices.price]
+          ) || 0,
+
+        rating:
+          parseFloat(
+            values[colIndices.rating]
+          ) || 4.0,
+
+        category:
+          values[colIndices.category]
+            ? values[colIndices.category].trim()
+            : 'Uncategorized',
+
+        image:
+          values[colIndices.image]
+            ? values[colIndices.image].trim()
+            : '',
+
+        url:
+          values[colIndices.url]
+            ? values[colIndices.url].trim()
+            : '#',
+
+        description:
+          values[colIndices.description]
+            ? values[colIndices.description].trim()
+            : ''
+
+      };
+
+
+      products.push(product);
+
+      categorySet.add(product.category);
+
+    }
+
+
+    categories =
+      Array.from(categorySet).sort();
+
+  }
+
+
+  /* =========================================================
+     CSV LINE PARSER
+     ========================================================= */
+
+  function parseCSVLine(line) {
+
+    var result = [];
+
+    var current = '';
+
+    var inQuotes = false;
+
+
+    for (
+      var i = 0;
+      i < line.length;
+      i++
+    ) {
+
+      var char = line[i];
+
+
+      if (char === '"') {
+
+        if (
+          inQuotes &&
+          line[i + 1] === '"'
+        ) {
+
+          current += '"';
+
+          i++;
+
+        }
+
+        else {
+
+          inQuotes = !inQuotes;
+
+        }
+
+      }
+
+      else if (
+        char === ',' &&
+        !inQuotes
+      ) {
+
+        result.push(current);
+
+        current = '';
+
+      }
+
+      else {
+
+        current += char;
+
+      }
+
+    }
+
+
+    result.push(current);
+
+    return result;
+
+  }
+
+
+  /* =========================================================
+     GOOGLE SHEETS JSON FALLBACK
+     ========================================================= */
+
+  function parseSheetData(data) {
+
+    var rows =
+      data.table.rows;
+
+    var headers = [];
+
+
+    if (
+      rows.length > 0 &&
+      rows[0].c
+    ) {
+
+      for (
+        var i = 0;
+        i < rows[0].c.length;
+        i++
+      ) {
+
+        var cell =
+          rows[0].c[i];
+
+        headers.push(
+          cell && cell.v
+            ? cell.v.toString().trim()
+            : ''
+        );
+
+      }
+
+    }
+
+
+    var colIndices = {
+
+      name: -1,
+
+      price: -1,
+
+      rating: -1,
+
+      category: -1,
+
+      image: -1,
+
+      url: -1,
+
+      description: -1
+
+    };
+
+
+    for (
+      var j = 0;
+      j < headers.length;
+      j++
+    ) {
+
+      var header =
+        headers[j].toLowerCase();
+
+
+      if (
+        header.indexOf('name') !== -1 ||
+        header === 'product'
+      ) {
+
+        colIndices.name = j;
+
+      }
+
+      else if (
+        header.indexOf('price') !== -1
+      ) {
+
+        colIndices.price = j;
+
+      }
+
+      else if (
+        header.indexOf('rating') !== -1 ||
+        header.indexOf('star') !== -1
+      ) {
+
+        colIndices.rating = j;
+
+      }
+
+      else if (
+        header.indexOf('category') !== -1 ||
+        header.indexOf('symptom') !== -1
+      ) {
+
+        colIndices.category = j;
+
+      }
+
+      else if (
+        header.indexOf('image') !== -1 ||
+        header.indexOf('img') !== -1
+      ) {
+
+        colIndices.image = j;
+
+      }
+
+      else if (
+        header.indexOf('url') !== -1 ||
+        header.indexOf('link') !== -1
+      ) {
+
+        colIndices.url = j;
+
+      }
+
+      else if (
+        header.indexOf('description') !== -1 ||
+        header.indexOf('desc') !== -1
+      ) {
+
+        colIndices.description = j;
+
+      }
+
+    }
+
+
+    if (
+      colIndices.description === -1 &&
+      headers.length > 2
+    ) {
+
+      colIndices.description = 2;
+
+    }
+
+
+    var categorySet = new Set();
+
+
+    for (
+      var k = 1;
+      k < rows.length;
+      k++
+    ) {
+
+      var row = rows[k];
+
+
+      if (!row.c) {
+        continue;
+      }
+
+
+      var product = {
+
+        id: k,
+
+        name:
+          getCellValue(
+            row.c[colIndices.name]
+          ) || 'Unknown Product',
+
+        price:
+          parseFloat(
+            getCellValue(
+              row.c[colIndices.price]
+            )
+          ) || 0,
+
+        rating:
+          parseFloat(
+            getCellValue(
+              row.c[colIndices.rating]
+            )
+          ) || 4.0,
+
+        category:
+          getCellValue(
+            row.c[colIndices.category]
+          ) || 'Uncategorized',
+
+        image:
+          getCellValue(
+            row.c[colIndices.image]
+          ) || '',
+
+        url:
+          getCellValue(
+            row.c[colIndices.url]
+          ) || '#',
+
+        description:
+          getCellValue(
+            row.c[colIndices.description]
+          ) || ''
+
+      };
+
+
+      if (
+        product.name &&
+        product.name !== 'Unknown Product'
+      ) {
+
+        products.push(product);
+
+        categorySet.add(
+          product.category
+        );
+
+      }
+
+    }
+
+
+    categories =
+      Array.from(categorySet).sort();
+
+  }
+
+
+  function getCellValue(cell) {
+
+    if (!cell) {
+      return '';
+    }
+
+
+    if (
+      cell.v !== undefined &&
+      cell.v !== null
+    ) {
+
+      return cell.v
+        .toString()
+        .trim();
+
+    }
+
+
+    return '';
+
+  }
+
+
+  /* =========================================================
+     INITIALIZE
+     ========================================================= */
+
+  function init() {
+
+    renderCategoryFilters();
+
+    renderProducts();
+
+    setupEventListeners();
+
+  }
+
+
+  /* =========================================================
+     CATEGORY FILTERS
+     ========================================================= */
+
+  function renderCategoryFilters() {
+
+    var container =
+      document.getElementById(
+        'pgCategoryFilters'
+      );
+
+
+    container.innerHTML = '';
+
+
+    var allBtn =
+      document.createElement('button');
+
+
+    allBtn.className =
+      'pg-category-btn active';
+
+
+    allBtn.textContent =
+      'All Products';
+
+
+    allBtn.onclick =
+      function() {
+
+        filterByCategory(
+          '',
+          allBtn
+        );
+
+      };
+
+
+    container.appendChild(allBtn);
+
+
+    for (
+      var i = 0;
+      i < categories.length;
+      i++
+    ) {
+
+      (function(category) {
+
+        var btn =
+          document.createElement('button');
+
+
+        btn.className =
+          'pg-category-btn';
+
+
+        btn.textContent =
+          category;
+
+
+        btn.onclick =
+          function() {
+
+            filterByCategory(
+              category,
+              btn
+            );
+
+          };
+
+
+        container.appendChild(btn);
+
+      })(categories[i]);
+
+    }
+
+  }
+
+
+  /* =========================================================
+     FILTERING / SORTING
+     ========================================================= */
+
+  function getFilteredProducts() {
+
+    var filtered =
+      products.slice();
+
+
+    if (searchTerm) {
+
+      var term =
+        searchTerm.toLowerCase();
+
+
+      filtered =
+        filtered.filter(
+          function(p) {
+
+            return (
+              p.name
+                .toLowerCase()
+                .indexOf(term) !== -1 ||
+
+              p.description
+                .toLowerCase()
+                .indexOf(term) !== -1 ||
+
+              p.category
+                .toLowerCase()
+                .indexOf(term) !== -1
+            );
+
+          }
+        );
+
+    }
+
+    else if (selectedCategory) {
+
+      filtered =
+        filtered.filter(
+          function(p) {
+
+            return (
+              p.category ===
+              selectedCategory
+            );
+
+          }
+        );
+
+    }
+
+
+    if (showFavoritesOnly) {
+
+      filtered =
+        filtered.filter(
+          function(p) {
+
+            return favorites.has(p.id);
+
+          }
+        );
+
+    }
+
+
+    if (sortBy === 'price-low') {
+
+      filtered.sort(
+        function(a, b) {
+
+          return a.price - b.price;
+
+        }
+      );
+
+    }
+
+    else if (sortBy === 'price-high') {
+
+      filtered.sort(
+        function(a, b) {
+
+          return b.price - a.price;
+
+        }
+      );
+
+    }
+
+    else if (sortBy === 'rating') {
+
+      filtered.sort(
+        function(a, b) {
+
+          return b.rating - a.rating;
+
+        }
+      );
+
+    }
+
+
+    return filtered;
+
+  }
+
+
+  /* =========================================================
+     STARS
+     ========================================================= */
+
+  function buildStarsElement(rating) {
+
+    var container =
+      document.createElement('span');
+
+
+    container.className =
+      'pg-stars';
+
+
+    for (
+      var i = 0;
+      i < 5;
+      i++
+    ) {
+
+      var fillAmount =
+        Math.max(
+          0,
+          Math.min(
+            1,
+            rating - i
+          )
+        );
+
+
+      var fillPercent =
+        Math.round(
+          fillAmount * 100
+        ) + '%';
+
+
+      var starWrap =
+        document.createElement('span');
+
+
+      starWrap.className =
+        'pg-star';
+
+
+      var bg =
+        document.createElement('span');
+
+
+      bg.className =
+        'pg-star-bg';
+
+
+      bg.textContent =
+        STAR_CHAR;
+
+
+      starWrap.appendChild(bg);
+
+
+      var fill =
+        document.createElement('span');
+
+
+      fill.className =
+        'pg-star-fill';
+
+
+      fill.style.width =
+        fillPercent;
+
+
+      fill.textContent =
+        STAR_CHAR;
+
+
+      starWrap.appendChild(fill);
+
+
+      container.appendChild(
+        starWrap
+      );
+
+    }
+
+
+    return container;
+
+  }
+
+
+  /* =========================================================
+     CREATE A SINGLE PRODUCT CARD
+     ========================================================= */
+
+  function createProductCard(product) {
+
+    var card =
+      document.createElement('div');
+
+
+    card.className =
+      'pg-product-card';
+
+
+    var imageContainer =
+      document.createElement('div');
+
+
+    imageContainer.className =
+      'pg-product-image-container';
+
+
+    if (product.image) {
+
+      var img =
+        document.createElement('img');
+
+
+      img.className =
+        'pg-product-image';
+
+
+      /*
+        FAST LOADING:
+        Browser does not need to download
+        every product image immediately.
+      */
+
+      img.loading = 'lazy';
+
+      img.decoding = 'async';
+
+      img.src = product.image;
+
+      img.alt = product.name;
+
+
+      img.onerror =
+        function() {
+
+          this.style.display =
+            'none';
+
+        };
+
+
+      imageContainer.appendChild(img);
+
+    }
+
+
+    var favBtn =
+      document.createElement('button');
+
+
+    favBtn.className =
+      'pg-favorite-btn' +
+      (
+        favorites.has(product.id)
+          ? ' favorited'
+          : ''
+      );
+
+
+    favBtn.setAttribute(
+      'data-product-id',
+      product.id
+    );
+
+
+    favBtn.setAttribute(
+      'aria-label',
+      favorites.has(product.id)
+        ? 'Remove from favorites'
+        : 'Add to favorites'
+    );
+
+
+    favBtn.onclick =
+      function() {
+
+        var productId =
+          parseInt(
+            this.getAttribute(
+              'data-product-id'
+            ),
+            10
+          );
+
+
+        toggleFavorite(
+          productId
+        );
+
+      };
+
+
+    var heartSvg =
+      document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'svg'
+      );
+
+
+    heartSvg.setAttribute(
+      'class',
+      'pg-heart-icon'
+    );
+
+
+    heartSvg.setAttribute(
+      'viewBox',
+      '0 0 24 24'
+    );
+
+
+    var heartPath =
+      document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'path'
+      );
+
+
+    heartPath.setAttribute(
+      'd',
+      'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'
+    );
+
+
+    heartSvg.appendChild(
+      heartPath
+    );
+
+
+    favBtn.appendChild(
+      heartSvg
+    );
+
+
+    imageContainer.appendChild(
+      favBtn
+    );
+
+
+    card.appendChild(
+      imageContainer
+    );
+
+
+    var info =
+      document.createElement('div');
+
+
+    info.className =
+      'pg-product-info';
+
+
+    var name =
+      document.createElement('h3');
+
+
+    name.className =
+      'pg-product-name';
+
+
+    name.textContent =
+      product.name;
+
+
+    info.appendChild(name);
+
+
+    var priceRatingRow =
+      document.createElement('div');
+
+
+    priceRatingRow.className =
+      'pg-price-rating-row';
+
+
+    var price =
+      document.createElement('div');
+
+
+    price.className =
+      'pg-product-price';
+
+
+    price.textContent =
+      '$' +
+      product.price.toFixed(2);
+
+
+    priceRatingRow.appendChild(
+      price
+    );
+
+
+    priceRatingRow.appendChild(
+      buildStarsElement(
+        product.rating
+      )
+    );
+
+
+    info.appendChild(
+      priceRatingRow
+    );
+
+
+    var descText =
+      product.description
+        ? product.description
+        : product.category;
+
+
+    var descEl =
+      document.createElement('div');
+
+
+    descEl.className =
+      'pg-product-category';
+
+
+    descEl.textContent =
+      descText;
+
+
+    info.appendChild(
+      descEl
+    );
+
+
+    var link =
+      document.createElement('a');
+
+
+    link.href =
+      product.url;
+
+
+    link.target =
+      '_blank';
+
+
+    link.rel =
+      'noopener noreferrer';
+
+
+    link.className =
+      'pg-shop-btn';
+
+
+    link.textContent =
+      'Shop Now';
+
+
+    info.appendChild(
+      link
+    );
+
+
+    card.appendChild(
+      info
+    );
+
+
+    return card;
+
+  }
+
+
+  /* =========================================================
+     FAST PRODUCT RENDERING
+     ========================================================= */
+
+ function renderProducts() {
+    var filtered = getFilteredProducts();
+    var grid = document.getElementById('pgProductsGrid');
+    var noResults = document.getElementById('pgNoResults');
+
+    if (filtered.length === 0) {
+      grid.innerHTML = ''; // Safe to clear if nothing matches
+      grid.style.display = 'none';
+      noResults.style.display = 'block';
+      return;
+    }
+
+    grid.style.display = 'grid';
+    noResults.style.display = 'none';
+
+    var firstBatchSize = 12;
+    var index = 0;
+
+    // Build the FIRST batch in a fragment BEFORE clearing the grid.
+    // This keeps your skeletons visible until the real cards are 100% ready to drop in.
+    var firstFragment = document.createDocumentFragment();
+    var end = Math.min(firstBatchSize, filtered.length);
+    
+    for (var i = index; i < end; i++) {
+      firstFragment.appendChild(createProductCard(filtered[i]));
+    }
+
+    // NOW clear the skeletons/old cards and drop the new ones in simultaneously
+    grid.innerHTML = '';
+    grid.appendChild(firstFragment);
+    index = end;
+
+    // Render the remainder of the batches using requestAnimationFrame
+    function renderBatch() {
+      if (index >= filtered.length) return;
+
+      var fragment = document.createDocumentFragment();
+      var batchEnd = Math.min(index + 12, filtered.length);
+
+      for (var j = index; j < batchEnd; j++) {
+        fragment.appendChild(createProductCard(filtered[j]));
+      }
+
+      grid.appendChild(fragment);
+      index = batchEnd;
+
+      if (index < filtered.length) {
+        requestAnimationFrame(renderBatch);
+      }
+    }
+
+    if (index < filtered.length) {
+      requestAnimationFrame(renderBatch);
+    }
+  }
+
+
+  /* =========================================================
+     FAVORITES
+     ========================================================= */
+
+  function toggleFavorite(productId) {
+
+    if (
+      favorites.has(productId)
+    ) {
+
+      favorites.delete(
+        productId
+      );
+
+    }
+
+    else {
+
+      favorites.add(
+        productId
+      );
+
+    }
+
+
+    updateFavoritesButton();
+
+    renderProducts();
+
+  }
+
+
+  function updateFavoritesButton() {
+
+    var btn =
+      document.getElementById(
+        'pgFavoritesBtn'
+      );
+
+
+    var count =
+      document.getElementById(
+        'pgFavCount'
+      );
+
+
+    var label =
+      document.getElementById(
+        'pgFavBtnLabel'
+      );
+
+
+    count.textContent =
+      (
+        !showFavoritesOnly &&
+        favorites.size > 0
+      )
+        ? '(' +
+          favorites.size +
+          ')'
+        : '';
+
+
+    btn.className =
+      showFavoritesOnly
+        ? 'pg-favorites-btn active'
+        : 'pg-favorites-btn';
+
+
+    label.textContent =
+      showFavoritesOnly
+        ? 'Back to Products'
+        : 'Show My Favorites';
+
+  }
+
+
+  /* =========================================================
+     CATEGORY FILTER
+     ========================================================= */
+
+  function filterByCategory(
+    category,
+    clickedBtn
+  ) {
+
+    selectedCategory =
+      category;
+
+
+    var buttons =
+      document.querySelectorAll(
+        '.pg-category-btn'
+      );
+
+
+    for (
+      var i = 0;
+      i < buttons.length;
+      i++
+    ) {
+
+      buttons[i]
+        .classList
+        .remove('active');
+
+    }
+
+
+    clickedBtn
+      .classList
+      .add('active');
+
+
+    renderProducts();
+
+  }
+
+
+  /* =========================================================
+     SEARCH CLEAR BUTTON
+     ========================================================= */
+
+  function updateSearchClearVisibility() {
+
+    var clearBtn =
+      document.getElementById(
+        'pgSearchClear'
+      );
+
+
+    clearBtn.style.display =
+      searchTerm
+        ? 'flex'
+        : 'none';
+
+  }
+
+
+  function resetCategoryFilterToAll() {
+
+    selectedCategory = '';
+
+
+    var buttons =
+      document.querySelectorAll(
+        '.pg-category-btn'
+      );
+
+
+    for (
+      var i = 0;
+      i < buttons.length;
+      i++
+    ) {
+
+      if (i === 0) {
+
+        buttons[i]
+          .classList
+          .add('active');
+
+      }
+
+      else {
+
+        buttons[i]
+          .classList
+          .remove('active');
+
+      }
+
+    }
+
+  }
+
+
+  /* =========================================================
+     EVENT LISTENERS
+     ========================================================= */
+
+  function setupEventListeners() {
+
+    var searchInput =
+      document.getElementById(
+        'pgSearchInput'
+      );
+
+
+    searchInput.addEventListener(
+      'input',
+      function(e) {
+
+        searchTerm =
+          e.target.value;
+
+
+        resetCategoryFilterToAll();
+
+        updateSearchClearVisibility();
+
+        renderProducts();
+
+      }
+    );
+
+
+    document
+      .getElementById(
+        'pgSearchClear'
+      )
+      .addEventListener(
+        'click',
+        function() {
+
+          searchTerm = '';
+
+          searchInput.value = '';
+
+          resetCategoryFilterToAll();
+
+          updateSearchClearVisibility();
+
+          renderProducts();
+
+        }
+      );
+
+
+    document
+      .getElementById(
+        'pgSortSelect'
+      )
+      .addEventListener(
+        'change',
+        function(e) {
+
+          sortBy =
+            e.target.value;
+
+          renderProducts();
+
+        }
+      );
+
+
+    document
+      .getElementById(
+        'pgFavoritesBtn'
+      )
+      .addEventListener(
+        'click',
+        function() {
+
+          showFavoritesOnly =
+            !showFavoritesOnly;
+
+
+          if (
+            showFavoritesOnly
+          ) {
+
+            searchTerm = '';
+
+            searchInput.value = '';
+
+            updateSearchClearVisibility();
+
+            resetCategoryFilterToAll();
+
+          }
+
+
+          updateFavoritesButton();
+
+          renderProducts();
+
+        }
+      );
+
+
+    document
+      .getElementById(
+        'pgClearBtn'
+      )
+      .addEventListener(
+        'click',
+        function() {
+
+          searchTerm = '';
+
+          showFavoritesOnly = false;
+
+          searchInput.value = '';
+
+          document
+            .getElementById(
+              'pgSortSelect'
+            )
+            .value = 'featured';
+
+
+          updateSearchClearVisibility();
+
+          resetCategoryFilterToAll();
+
+          updateFavoritesButton();
+
+          renderProducts();
+
+        }
+      );
+
+  }
+
+
+  /* =========================================================
+     START
+     ========================================================= */
+
+  /*
+    The interface is already visible.
+
+    Skeleton cards are already visible.
+
+    The Google Sheet now loads in the background.
+  */
+
+  showSkeletons();
+
+  loadProductsFromSheet();
+
+
+})();
+
+</script>
