@@ -2379,55 +2379,78 @@
 
 </script>
 
+
 <script>
-(function() {
+(function () {
     'use strict';
 
-    function reportHeight() {
-        const height = Math.ceil(
-            Math.max(
-                document.documentElement.scrollHeight,
-                document.body.scrollHeight,
-                document.documentElement.getBoundingClientRect().height
-            )
-        );
+    const container = document.querySelector(
+        '.product-grid-container'
+    );
 
-        window.parent.postMessage(
-            {
-                type: 'menohello-resize',
-                height: height
-            },
-            'https://www.menohello.com'
-        );
-    }
+    const grid = document.getElementById(
+        'pgProductsGrid'
+    );
+
+    if (!container || !grid) return;
 
     let resizeTimer;
 
-    function scheduleReport() {
+    function reportHeight() {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(reportHeight, 100);
+
+        resizeTimer = setTimeout(function () {
+            const height = Math.ceil(
+                container.getBoundingClientRect().bottom +
+                window.scrollY
+            );
+
+            window.parent.postMessage(
+                {
+                    type: 'menohello-resize',
+                    height: height
+                },
+                '*'
+            );
+        }, 150);
     }
 
-    const observer = new ResizeObserver(scheduleReport);
+    // Watch the container and grid for actual size changes.
+    const resizeObserver = new ResizeObserver(
+        reportHeight
+    );
 
-    observer.observe(document.documentElement);
-    observer.observe(document.body);
+    resizeObserver.observe(container);
+    resizeObserver.observe(grid);
 
-    window.addEventListener('load', scheduleReport);
-    window.addEventListener('resize', scheduleReport);
+    // Detect product cards being added or removed.
+    const mutationObserver = new MutationObserver(
+        reportHeight
+    );
 
-    document.addEventListener('click', scheduleReport);
-    document.addEventListener('input', scheduleReport);
-    document.addEventListener('change', scheduleReport);
-
-    // Account for images loading after the initial page load.
-    document.querySelectorAll('img').forEach(function(img) {
-        if (!img.complete) {
-            img.addEventListener('load', scheduleReport);
-            img.addEventListener('error', scheduleReport);
-        }
+    mutationObserver.observe(grid, {
+        childList: true,
+        subtree: true
     });
 
+    // Detect images loading after products appear.
+    document.addEventListener(
+        'load',
+        reportHeight,
+        true
+    );
+
+    window.addEventListener(
+        'load',
+        reportHeight
+    );
+
+    window.addEventListener(
+        'resize',
+        reportHeight
+    );
+
     reportHeight();
+
 })();
 </script>
