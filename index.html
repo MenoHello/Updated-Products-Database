@@ -730,138 +730,57 @@
 
 
   /* =========================================================
-     LOAD GOOGLE SHEET
+     LOAD STATIC PRODUCT JSON
+     GitHub Actions refreshes products.json from the Google Sheet.
      ========================================================= */
 
   function loadProductsFromSheet() {
 
-    var csvUrl =
-      'https://docs.google.com/spreadsheets/d/' +
-      SHEET_ID +
-      '/export?format=csv&gid=0';
-
-
-    /*
-      IMPORTANT:
-      The page is already visible at this point.
-
-      We do NOT hide pgMainContent while the
-      Google Sheet is loading.
-    */
-
-    fetch(csvUrl)
+    fetch('./products.json?cache=' + Date.now())
 
       .then(function(response) {
 
         if (!response.ok) {
-
-          throw new Error(
-            'Failed to fetch: ' + response.status
-          );
-
+          throw new Error('Failed to fetch products.json: ' + response.status);
         }
 
-        return response.text();
+        return response.json();
 
       })
 
-      .then(function(csvText) {
+      .then(function(data) {
 
-        parseCSVData(csvText);
+        if (!Array.isArray(data)) {
+          throw new Error('products.json must contain a product array');
+        }
+
+        products = data;
+        categories = Array.from(new Set(
+          products.map(function(product) {
+            return product.category || 'Uncategorized';
+          })
+        )).sort();
 
         dataLoaded = true;
-
         init();
 
       })
 
       .catch(function(error) {
 
-        console.error(
-          'CSV loading failed:',
-          error
-        );
+        console.error('Product data loading failed:', error);
 
+        var grid = document.getElementById('pgProductsGrid');
+        if (grid) grid.innerHTML = '';
 
-        /*
-          Fallback to Google Visualization JSON.
-        */
-
-        var jsonUrl =
-          'https://docs.google.com/spreadsheets/d/' +
-          SHEET_ID +
-          '/gviz/tq?tqx=out:json&sheet=' +
-          encodeURIComponent(SHEET_NAME);
-
-
-        fetch(jsonUrl)
-
-          .then(function(response) {
-
-            if (!response.ok) {
-
-              throw new Error(
-                'JSON request failed: ' +
-                response.status
-              );
-
-            }
-
-            return response.text();
-
-          })
-
-          .then(function(text) {
-
-            var json =
-              text.substr(47).slice(0, -2);
-
-            var data =
-              JSON.parse(json);
-
-            parseSheetData(data);
-
-            dataLoaded = true;
-
-            init();
-
-          })
-
-          .catch(function(error2) {
-
-            console.error(
-              'Both methods failed:',
-              error,
-              error2
-            );
-
-
-            var grid =
-              document.getElementById(
-                'pgProductsGrid'
-              );
-
-            if (grid) {
-              grid.innerHTML = '';
-            }
-
-
-            var errorDiv =
-              document.getElementById(
-                'pgErrorState'
-              );
-
-            errorDiv.textContent =
-              'Error loading products. Please ensure the Google Sheet is published to the web.';
-
-            errorDiv.style.display = 'block';
-
-          });
+        var errorDiv = document.getElementById('pgErrorState');
+        errorDiv.textContent =
+          'Error loading products. Please try again later.';
+        errorDiv.style.display = 'block';
 
       });
 
   }
-
 
   /* =========================================================
      CSV PARSER
