@@ -40,8 +40,11 @@ jobs:
               raise RuntimeError("The Google Sheet returned no column headers.")
 
           headers = [h.strip().lower() for h in reader.fieldnames]
-          def find_column(exact_matches, partial_matches=()):
-              # Prefer exact header matches so "imageurl" is not mistaken for "url".
+          def find_column(exact_matches, partial_matches=None):
+              # Prefer exact header matches, then retain the original partial-match
+              # behavior for other columns such as "Product Name" or "Retail Price".
+              if partial_matches is None:
+                  partial_matches = exact_matches
               for index, header in enumerate(headers):
                   if header in exact_matches:
                       return reader.fieldnames[index]
