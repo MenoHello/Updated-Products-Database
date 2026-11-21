@@ -40,9 +40,13 @@ jobs:
               raise RuntimeError("The Google Sheet returned no column headers.")
 
           headers = [h.strip().lower() for h in reader.fieldnames]
-          def find_column(matches):
+          def find_column(exact_matches, partial_matches=()):
+              # Prefer exact header matches so "imageurl" is not mistaken for "url".
               for index, header in enumerate(headers):
-                  if any(term in header for term in matches):
+                  if header in exact_matches:
+                      return reader.fieldnames[index]
+              for index, header in enumerate(headers):
+                  if any(term in header for term in partial_matches):
                       return reader.fieldnames[index]
               return None
 
@@ -53,8 +57,14 @@ jobs:
           price_col = find_column(["price"])
           rating_col = find_column(["rating", "star"])
           category_col = find_column(["category", "symptom"])
-          image_col = find_column(["image", "img", "picture"])
-          url_col = find_column(["url", "link"])
+          image_col = find_column(
+              ["imageurl", "image url", "image", "img", "picture"],
+              ["image", "img", "picture"]
+          )
+          url_col = find_column(
+              ["amazonlink", "amazon link", "product url", "product link", "url", "link"],
+              ["amazonlink", "amazon link", "product url", "product link", "url", "link"]
+          )
           description_col = find_column(["description", "desc"])
 
           if description_col is None and len(reader.fieldnames) > 2:
